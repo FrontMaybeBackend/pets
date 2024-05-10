@@ -53,7 +53,6 @@ class PetController extends Controller
     {
         return view('pets.show', [
             'pet' => $pet,
-            'status' => $pet->getPetsWithStatus(),
         ]);
 
     }
