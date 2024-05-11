@@ -1,62 +1,88 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+@extends('layouts.app')
 
-    <title>Document</title>
-</head>
-<body>
-<a href="{{ route ('pets.create') }}">
-    <button type="button" class="btn btn-primary">Add new pet</button>
-</a>
+@section('content')
 
-<table class="table w-50">
-    <thead>
-    <tr>
-        <th scope="col">#</th>
-        <th scope="col">Name</th>
-        <th scope="col">Status</th>
-        <th scope="col">Tag</th>
-        <th scope="col">Category</th>
-        <th scope="col">Photo</th>
-        <th scope="col">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach ($pets as $pet)
-        <tr>
-            <th scope="row">{{ $pet->id }}</th>
-            <td>{{ $pet->name }}</td>
-            <td>{{ $pet->status }}</td>
-            <td>{{ $pet->tag }}</td>
-            <td>{{ $pet->category->name }}</td>
-            <td><img src="{{asset('storage/' . $pet->photoUrls)}}"></td>
-            <td>
-             <form action="{{ route('pets.delete', $pet) }}" method="POST">
-                 @csrf
-                 @method('DELETE')
-                 <button type="submit" class="btn btn-info">Delete</button>
-             </form>
-            </td>
-            <td>
-                <a href="{{ route('pets.edit',$pet) }}">
-                    <button type="button" class="btn btn-danger"> Edit</button>
-                </a>
-                <a href="{{ route ('pets.show', $pet) }}">
-                    <button type="button" class="btn btn-info">Info</button>
-                </a>
-            </td>
-            <td>
+    <a href="{{ route ('pets.create') }}">
+        <button type="button" class="btn btn-primary">Add new pet</button>
+    </a>
 
-            <td>
-        </tr>
-    @endforeach
-    </tbody>
-</table>
-</body>
-</html>
+    <form action="{{ route('pets.status','status') }}" method="GET">
+        <p>Find pet by status</p>
+        <div class="mb-3">
+            <label for="status" class="form-label"> Status
+                <select name="status" class="form-select">
+                    <option value="available">Available</option>
+                    <option value="pending">Pending</option>
+                    <option value="sold">Sold</option>
+                </select>
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    @if(isset($status))
+        <table class="table w-75">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Status</th>
+                <th scope="col">Category</th>
+                <th scope="col">Tag</th>
+                <th scope="col">Photo</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($status as $pet)
+                <tr>
+                    <th scope="row">{{ $pet['id'] }}</th>
+                    <td>{{ $pet['name'] }}</td>
+                    <td>{{ $pet['status'] }}</td>
+                    @if(isset($pet['category']['name']))
+                        <td>{{ $pet['category']['name'] }}</td>
+                    @else
+                        <td>Brak kategorii</td>
+                    @endif
+
+                    <td>
+                        @if(isset($pet['tags']))
+                            @foreach ($pet['tags'] as $tag)
+                                {{$tag['name']}}
+                            @endforeach
+                        @else
+                            brak tagu
+                        @endif
+                    </td>
+
+                    <td>
+                        @if(isset($pet['photoUrls']['photoUrl']))
+                            {{$pet['photoUrls']['photoUrl']}}
+                        @else
+                            brak zdjęcia
+                        @endif
+                    </td>
+
+                    <td>
+                        <form action="{{ route('pets.delete', $pet['id']) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-info">Delete</button>
+                        </form>
+                    </td>
+
+                    <td>
+                        <a href="{{ route ('pets.edit', $pet['id']) }}">
+                            <button type="button" class="btn btn-primary">Edit</button>
+                        </a>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    @else
+        <p>Nie znaleziono</p>
+    @endif
+
+
+@endsection

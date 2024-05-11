@@ -25,9 +25,8 @@ class PetRequest extends FormRequest
 
         return [
             'name' => 'required|max:20|',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:1024|dimensions:max_width=350,max_height=600',
-            'tag' => 'required|max:20',
-            'status' => 'required',
+            'photo' => 'nullable|image|max:1024|dimensions:max_width=350,max_height=600',
+
         ];
     }
 
