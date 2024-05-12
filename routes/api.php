@@ -15,7 +15,6 @@ Route::middleware(['guest', 'web'])->group(function () {
     Route::get('/pet/findByStatus/{status}',[PetController::class,'status'])->name('pets.status');
     Route::get('/pet/{id}',[PetController::class,'show'])->name('pets.show');
     Route::get('/pet/edit/{id}',[PetController::class,'edit'])->name('pets.edit');
-    Route::post('/pet/{id}/uploadImage',[PetController::class,'storeImage'])->name('pets.storeImage');
 
     Route::put('/pet/{id}',[PetController::class,'update'])->name('pets.update');
     Route::delete('pet/{id}',[PetController::class,'destroy'])->name('pets.delete');

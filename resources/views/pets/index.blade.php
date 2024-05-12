@@ -48,7 +48,13 @@
                             @endforeach
                         @endif
                     </td>
-                    <td>{{ $pet['photoUrls'][0] ?? 'brak zdjęcia' }}</td>
+                    <td>
+                        @if(isset($pet['photoUrls'][0]))
+                            <img src="{{ $pet['photoUrls'][0] }}" alt="Pet Photo" style="max-width: 200px; max-height: 200px;">
+                        @else
+                            brak zdjęcia
+                        @endif
+                    </td>
                     <td>
                         <form action="{{ route('pets.delete', $pet['id']) }}" method="POST">
                             @csrf

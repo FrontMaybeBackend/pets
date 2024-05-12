@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PetRequest;
-use App\Models\Category;
-use App\Models\Pet;
 use App\Services\PetServices;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
@@ -53,51 +50,20 @@ class PetController extends Controller
     }
 
 
-    public function storeImage(PetServices $petServices, Request $request, $id)
-    {
-        $response = Http::post('https://petstore.swagger.io/v2/pet/' . $id . '/uploadImage', [
-          // 'photoUrls' =>
-             //  [
-           // $request->file('photoUrls')->store('pets', 'public'),
-           // ],
-            'additionalMetadata' => $request->input('metaData'),
-        ]);
-        if ($response->successful()) {
-            return redirect()->route('pets.show', $id)->with('success', 'image uploaded');
-        } else {
-            return redirect()->route('pets.show', $id)->with('error', 'failed to upload image');
-        }
-    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PetRequest $request): RedirectResponse
+    public function store(Request $request, PetServices $imageService): RedirectResponse
     {
-        $response = Http::post('https://petstore.swagger.io/v2/pet', [
-            'name' => $request->input('name'),
-            'status' => $request->input('status'),
-            'category' => [
-                'id' => 0,
-                'name' => $request->input('category_name'),
-            ],
-          //  'photoUrls' => [
-            //    $request->file('photoUrls')->store('pets'),
-           // ],
-            'tags' => [
-                [
-                    'id' => 0,
-                    'name' => $request->input('tag_name'),
-                ],
-            ],
-        ]);
-
-        if ($response->successful()) {
-            return redirect()->route('pets.create')->with('success', 'Pet created');
-        } else {
-            return redirect()->route('pets.create')->with('error', 'Failed to create pet');
-        }
+       $response = $imageService->imageStore($request);
+       if($response == 200){
+           return redirect()->route('pets.create')->with('success', 'Pet created');
+       }else{
+           return redirect()->route('pets.create')->with('error', 'Failed to created pet');
+       }
     }
+
 
 
 
@@ -140,9 +106,6 @@ class PetController extends Controller
                 'id' => 0,
                 'name' => $request->input('category_name'),
             ],
-           // 'photoUrls' => [
-           //     $request->file('photo')->store('pets'),
-           // ],
             'tags' => [
                 [
                     'id' => 0,

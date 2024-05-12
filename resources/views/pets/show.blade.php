@@ -22,33 +22,19 @@
                     <td>{{ $pet['category']['name'] }}</td>
                 @endif
                 @if(isset($pet['tags']))
-                    @foreach($pet['tags'] as $tag)
-                        <td>{{ $tag['name'] }}</td>
+                    @foreach ($pet['tags'] as $tag)
+                       <td> {{ $tag['name'] ?? 'brak tagu' }}</td>
                     @endforeach
                 @endif
+                <td>
+                    @if(isset($pet['photoUrls'][0]))
+                        <img src="{{ $pet['photoUrls'][0] }}" alt="Pet Photo" style="max-width: 200px; max-height: 200px;">
+                    @else
+                        brak zdjęcia
+                    @endif
+                </td>
             </tr>
             <tr>
-                <h2>Upload image</h2>
-                <form method="POST" action="{{ route('pets.storeImage', $pet['id']) }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="petId" class="form-label">PetId</label>
-                        <input type="text" class="form-control" required
-                               id="petId" name="petId" readonly
-                               value="{{ $pet['id'] }}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="metadata" class="form-label">MetaData</label>
-                        <input type="text" class="form-control"
-                               id="metaData" name="metaData">
-                    </div>
-                    <div class="mb-3">
-                        <label for="photoUrls" class="form-label">Photo</label>
-                        <input type="file" class="form-control"
-                               id="photoUrls" name="photoUrls">
-                    </div>
-                    <button type="submit" class="btn btn-primary" >Upload</button>
-                </form>
                 @endif
                 <a href="{{ route('pets.index') }}">
                     <button type="button" class="btn btn-primary">Back</button>

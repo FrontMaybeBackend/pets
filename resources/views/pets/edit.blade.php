@@ -18,7 +18,7 @@
                 @if(isset($pet['tags']))
                     @foreach($pet['tags'] as $tag)
                         <input type="text" class="form-control" id="tag" name="tag_name" required
-                               value="{{ $tag['name'] }}">
+                               value="{{ $tag['name'] ?? 'brak tagu' }}">
                     @endforeach
                 @else
                     <input type="text" class="form-control" id="tag" name="tag_name" required>
@@ -30,6 +30,7 @@
                        value="{{ isset($pet['category']['name']) ? $pet['category']['name'] : '' }}">
                 <div id="emailHelp" class="form-text">Category pet</div>
             </div>
+
             <div class="mb-3">
                 <label for="status" class="form-label">Status</label>
                 <select name="status" class="form-select" id="status">
