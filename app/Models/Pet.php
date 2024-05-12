@@ -23,15 +23,6 @@ class Pet extends Model
         'category_id',
     ];
 
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }
-
-    public function getPetsWithCategory()
-    {
-        return Pet::with('category')->get();
-    }
 
 
 }

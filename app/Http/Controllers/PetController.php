@@ -23,10 +23,11 @@ class PetController extends Controller
      */
 
 
-    public function index(Pet $pet): View
+    public function index(): View
     {
-        return view('pets.index', ['pets' => $pet->getPetsWithCategory()]);
+        return view('pets.index');
     }
+
 
     public function status(Request $request): View
     {
@@ -51,26 +52,53 @@ class PetController extends Controller
         return view('pets.create');
     }
 
+
+    public function storeImage(PetServices $petServices, Request $request, $id)
+    {
+        $response = Http::post('https://petstore.swagger.io/v2/pet/' . $id . '/uploadImage', [
+          // 'photoUrls' =>
+             //  [
+           // $request->file('photoUrls')->store('pets', 'public'),
+           // ],
+            'additionalMetadata' => $request->input('metaData'),
+        ]);
+        if ($response->successful()) {
+            return redirect()->route('pets.show', $id)->with('success', 'image uploaded');
+        } else {
+            return redirect()->route('pets.show', $id)->with('error', 'failed to upload image');
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(PetRequest $request): RedirectResponse
     {
-        $response = Http::post('https://petstore.swagger.io/v2/pet',[
-            'name' => $request->name,
-            'status' => $request->status,
-            'tag' => $request->tag,
-
+        $response = Http::post('https://petstore.swagger.io/v2/pet', [
+            'name' => $request->input('name'),
+            'status' => $request->input('status'),
+            'category' => [
+                'id' => 0,
+                'name' => $request->input('category_name'),
+            ],
+          //  'photoUrls' => [
+            //    $request->file('photoUrls')->store('pets'),
+           // ],
+            'tags' => [
+                [
+                    'id' => 0,
+                    'name' => $request->input('tag_name'),
+                ],
+            ],
         ]);
 
-        $request->validated();
         if ($response->successful()) {
-            return redirect()->route('pets.create')->with('success', 'pet creates');
+            return redirect()->route('pets.create')->with('success', 'Pet created');
         } else {
-            return redirect()->route('pets.create')->with('error', 'failed to creates pet');
+            return redirect()->route('pets.create')->with('error', 'Failed to create pet');
         }
-
     }
+
 
 
 
@@ -106,12 +134,22 @@ class PetController extends Controller
     {
         $response = Http::put('https://petstore.swagger.io/v2/pet/', [
             'id' => $id,
-            'name' => $request->name,
-            'status' => $request->status,
-            'tag' => $request->tag,
-            'photo'=>$request->photo
+            'name' => $request->input('name'),
+            'status' => $request->input('status'),
+            'category' => [
+                'id' => 0,
+                'name' => $request->input('category_name'),
+            ],
+           // 'photoUrls' => [
+           //     $request->file('photo')->store('pets'),
+           // ],
+            'tags' => [
+                [
+                    'id' => 0,
+                    'name' => $request->input('tag_name'),
+                ],
+            ],
         ]);
-        $request->validated();
 
         if ($response->successful()) {
             return redirect()->route('pets.show', $id)->with('success', 'pet updates');

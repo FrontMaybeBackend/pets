@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <a href="{{ route ('pets.create') }}">
+    <a href="{{ route('pets.create') }}">
         <button type="button" class="btn btn-primary">Add new pet</button>
     </a>
 
@@ -19,6 +19,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
+
 
     @if(isset($status))
         <table class="table w-75">
@@ -37,32 +38,17 @@
             @foreach($status as $pet)
                 <tr>
                     <th scope="row">{{ $pet['id'] }}</th>
-                    <td>{{ $pet['name'] }}</td>
+                    <td>{{ $pet['name'] ?? 'brak nazwy' }}</td>
                     <td>{{ $pet['status'] }}</td>
-                    @if(isset($pet['category']['name']))
-                        <td>{{ $pet['category']['name'] }}</td>
-                    @else
-                        <td>Brak kategorii</td>
-                    @endif
-
+                    <td>{{ $pet['category']['name'] ?? 'Brak kategorii' }}</td>
                     <td>
                         @if(isset($pet['tags']))
                             @foreach ($pet['tags'] as $tag)
-                                {{$tag['name']}}
+                                {{ $tag['name'] ?? 'brak tagu' }}
                             @endforeach
-                        @else
-                            brak tagu
                         @endif
                     </td>
-
-                    <td>
-                        @if(isset($pet['photoUrls']['photoUrl']))
-                            {{$pet['photoUrls']['photoUrl']}}
-                        @else
-                            brak zdjęcia
-                        @endif
-                    </td>
-
+                    <td>{{ $pet['photoUrls'][0] ?? 'brak zdjęcia' }}</td>
                     <td>
                         <form action="{{ route('pets.delete', $pet['id']) }}" method="POST">
                             @csrf
@@ -70,12 +56,17 @@
                             <button type="submit" class="btn btn-info">Delete</button>
                         </form>
                     </td>
-
                     <td>
-                        <a href="{{ route ('pets.edit', $pet['id']) }}">
+                        <a href="{{ route('pets.edit', $pet['id']) }}">
                             <button type="button" class="btn btn-primary">Edit</button>
                         </a>
                     </td>
+                    <td>
+                        <a href="{{ route('pets.show', $pet['id']) }}">
+                            <button type="button" class="btn btn-primary">View</button>
+                        </a>
+                    </td>
+
                 </tr>
             @endforeach
             </tbody>
@@ -83,6 +74,5 @@
     @else
         <p>Nie znaleziono</p>
     @endif
-
 
 @endsection
